@@ -99,3 +99,7 @@
 [[resource-post-create]]
 === 게시글 등록
 operation::post-create[]
+
+[[resource-post-read]]
+=== 게시글 조회
+operation::post-read[]

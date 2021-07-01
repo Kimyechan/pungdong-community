@@ -10,10 +10,7 @@ import com.diving.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -24,6 +21,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> readPost(@PathVariable("id") Long id) {
+        Post post = postService.findPost(id);
+
+        PostModel model = new PostModel(post);
+        return ResponseEntity.ok().body(model);
+    }
 
     @PostMapping
     public ResponseEntity<?> createPost(@CurrentUser Account account,

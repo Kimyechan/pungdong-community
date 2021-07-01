@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +34,11 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,6 +93,7 @@ class PostControllerTest {
 
         Post post = Post.builder()
                 .id(1L)
+                .dateOfRegistration(LocalDateTime.now())
                 .category(postInfo.getCategory())
                 .tags(postInfo.getTags())
                 .title(postInfo.getTitle())
@@ -122,6 +127,57 @@ class PostControllerTest {
                                 ),
                                 responseFields(
                                         fieldWithPath("postResource.id").description("게시글 식별자 값"),
+                                        fieldWithPath("postResource.dateOfRegistration").description("게시글 등록 시기"),
+                                        fieldWithPath("postResource.category").description("게시글 카테고리"),
+                                        fieldWithPath("postResource.tags[]").description("게시글 태그 목록"),
+                                        fieldWithPath("postResource.title").description("게시글 제목"),
+                                        fieldWithPath("postResource.content").description("게시글 내용"),
+                                        fieldWithPath("postResource.likeCount").description("게시글 좋아요 수"),
+                                        fieldWithPath("postResource.commentCount").description("게시글 댓글 수"),
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("게시글 단건 조회")
+    public void readPost() throws Exception {
+        Long postId = 1L;
+
+        Account account = createAccount(Role.STUDENT);
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()), account.getRoles());
+
+        Post post = Post.builder()
+                .id(1L)
+                .dateOfRegistration(LocalDateTime.now())
+                .category(Category.SHARE)
+                .tags(List.of("프리 다이빙", "숨 참기 비법"))
+                .title("프리 다이빙 2분이상 숨 참는 비법 공유합니다!!")
+                .content("비법 공유 내용입니다")
+                .likeCount(10)
+                .commentCount(10)
+                .build();
+
+        given(postService.findPost(any())).willReturn(post);
+
+        mockMvc.perform(get("/community/post/{id}", postId)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("post-read",
+                                pathParameters(
+                                    parameterWithName("id").description("게시글 식별자 값")
+                                ),
+                                requestHeaders(
+                                        headerWithName(HttpHeaders.CONTENT_TYPE).description("application json 타입"),
+                                        headerWithName(HttpHeaders.AUTHORIZATION).optional().description("access token 값")
+                                ),
+                                responseFields(
+                                        fieldWithPath("postResource.id").description("게시글 식별자 값"),
+                                        fieldWithPath("postResource.dateOfRegistration").description("게시글 등록 시기"),
                                         fieldWithPath("postResource.category").description("게시글 카테고리"),
                                         fieldWithPath("postResource.tags[]").description("게시글 태그 목록"),
                                         fieldWithPath("postResource.title").description("게시글 제목"),
