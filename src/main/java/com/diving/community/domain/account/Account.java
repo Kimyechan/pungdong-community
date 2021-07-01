@@ -22,6 +22,7 @@ public class Account {
 
     @ElementCollection(fetch = FetchType.LAZY)
     private Set<Role> roles;
+
     private String nickName;
 
     private String profileImageUrl;

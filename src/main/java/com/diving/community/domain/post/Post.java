@@ -44,4 +44,10 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Account writer;
+
+    @PrePersist
+    public void prePersist() {
+        this.likeCount = this.likeCount == null ? 0 : this.likeCount;
+        this.commentCount = this.commentCount == null ? 0 : this.commentCount;
+    }
 }

@@ -11,6 +11,8 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.backoff.FixedBackOff;
 
 @SpringBootApplication
@@ -24,6 +26,11 @@ public class CommunityApplication {
         new SpringApplicationBuilder(CommunityApplication.class)
                 .properties(APPLICATION_LOCATIONS)
                 .run(args);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean

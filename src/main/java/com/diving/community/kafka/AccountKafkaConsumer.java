@@ -15,6 +15,8 @@ public class AccountKafkaConsumer {
     public void saveAccount(AccountInfo accountInfo) {
         Account account = Account.builder()
                 .id(Long.valueOf(accountInfo.getId()))
+                .password(accountInfo.getPassword())
+                .roles(accountInfo.getRoles())
                 .nickName(accountInfo.getNickName())
                 .profileImageUrl(accountInfo.getProfileImageUrl())
                 .build();

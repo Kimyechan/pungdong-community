@@ -45,18 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()
-                        .antMatchers("/sign/sign-up", "/sign/login", "/sign/check/**", "/sign/refresh",
-                                "/email/code/**").permitAll()
-                        .antMatchers("/lecture/detail", "/lecture/list", "/lecture/new/list", "/lecture/popular/list", "/lecture/list/search/**",
-                                "/lecture/instructor/info/creator").permitAll()
-                        .antMatchers(HttpMethod.GET, "/lecture", "/location", "/review/list", "/equipment/list").permitAll()
-                        .antMatchers(HttpMethod.GET, "/schedule", "/schedule/equipments").permitAll()
-                        .antMatchers("/lectureImage/list").permitAll()
-                        .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
-                        .antMatchers("/sign/instructor/request/list", "/sign/instructor/confirm").hasRole("ADMIN")
-                        .antMatchers("/account/instructor/**").hasRole("INSTRUCTOR")
-                        .antMatchers("/lecture/create", "/lecture/update", "/lecture/delete", "/lecture/manage/list"
-                                , "/location/create", "/lectureImage/create/list", "/equipment/create/list").authenticated()
+                        .antMatchers().permitAll()
                         .anyRequest().authenticated()
                 .and()
                     .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
