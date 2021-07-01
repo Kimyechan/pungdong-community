@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AccountKafkaConsumer {
     private final AccountJpaRepo accountJpaRepo;
 
-    @KafkaListener(topics = "account", groupId = "group_id")
+    @KafkaListener(topics = "account", groupId = "community")
     public void saveAccount(AccountInfo accountInfo) {
         Account account = Account.builder()
                 .id(Long.valueOf(accountInfo.getId()))

@@ -4,11 +4,9 @@ import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.post.Post;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,6 +18,10 @@ public class Account {
     @Id
     private Long id;
 
+    private String password;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Set<Role> roles;
     private String nickName;
 
     private String profileImageUrl;
