@@ -58,4 +58,12 @@ public class PostController {
 
         return ResponseEntity.created(linkTo(PostController.class).slash(post.getId()).toUri()).body(model);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> removePost(@CurrentUser Account account,
+                                        @PathVariable("id") Long id) {
+        postService.deletePost(account, id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

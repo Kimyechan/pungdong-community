@@ -107,3 +107,7 @@ operation::post-read[]
 [[resource-post-update]]
 === 게시글 수정
 operation::post-update[]
+
+[[resource-post-delete]]
+=== 게시글 삭제
+operation::post-delete[]

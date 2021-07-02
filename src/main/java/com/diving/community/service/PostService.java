@@ -54,4 +54,11 @@ public class PostService {
             throw new NoPermissionsException();
         }
     }
+
+    public void deletePost(Account account, Long id) {
+        Post post = findPost(id);
+        checkPostCreator(account, post.getWriter());
+
+        postJpaRepo.deleteById(id);
+    }
 }
