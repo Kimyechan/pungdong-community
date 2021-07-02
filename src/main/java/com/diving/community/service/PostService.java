@@ -1,5 +1,6 @@
 package com.diving.community.service;
 
+import com.diving.community.advice.exception.NoPermissionsException;
 import com.diving.community.advice.exception.ResourceNotFoundException;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;
@@ -30,7 +31,27 @@ public class PostService {
         return postJpaRepo.save(post);
     }
 
+    @Transactional(readOnly = true)
     public Post findPost(Long id) {
         return postJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    public Post updatePostInfo(Account account, Long id, PostInfo postInfo) {
+        Post post = findPost(id);
+        checkPostCreator(account, post.getWriter());
+
+        post.setCategory(postInfo.getCategory());
+        post.setTags(postInfo.getTags());
+        post.setTitle(postInfo.getTitle());
+        post.setContent(postInfo.getContent());
+
+        return postJpaRepo.save(post);
+    }
+
+    @Transactional(readOnly = true)
+    public void checkPostCreator(Account account, Account writer) {
+        if (!account.getId().equals(writer.getId())) {
+            throw new NoPermissionsException();
+        }
     }
 }

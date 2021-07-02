@@ -25,8 +25,8 @@ public class PostController {
     @GetMapping("/{id}")
     public ResponseEntity<?> readPost(@PathVariable("id") Long id) {
         Post post = postService.findPost(id);
-
         PostModel model = new PostModel(post);
+
         return ResponseEntity.ok().body(model);
     }
 
@@ -39,8 +39,23 @@ public class PostController {
         }
 
         Post post = postService.savePostInfo(account, postInfo);
-
         PostModel model = new PostModel(post);
+
+        return ResponseEntity.created(linkTo(PostController.class).slash(post.getId()).toUri()).body(model);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> modifyPost(@CurrentUser Account account,
+                                        @PathVariable("id") Long id,
+                                        @Valid @RequestBody PostInfo postInfo,
+                                        BindingResult result) {
+        if (result.hasErrors()) {
+            throw new BadRequestException();
+        }
+
+        Post post = postService.updatePostInfo(account, id, postInfo);
+        PostModel model = new PostModel(post);
+
         return ResponseEntity.created(linkTo(PostController.class).slash(post.getId()).toUri()).body(model);
     }
 }
