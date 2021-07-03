@@ -7,9 +7,11 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.account.Role;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
+import com.diving.community.domain.post.PostImage;
 import com.diving.community.dto.post.PostInfo;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.service.AccountService;
+import com.diving.community.service.PostImageService;
 import com.diving.community.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,6 +46,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,6 +70,9 @@ class PostControllerTest {
 
     @MockBean
     private PostService postService;
+
+    @MockBean
+    private PostImageService postImageService;
 
     public Account createAccount(Role role) {
         Account account = Account.builder()
@@ -353,6 +360,59 @@ class PostControllerTest {
                                         fieldWithPath("page.totalPages").description("전체 페이지 수"),
                                         fieldWithPath("page.number").description("현재 페이지 번호"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("게시글 이미지들 생성")
+    public void createPostImages() throws Exception {
+        Long postId = 1L;
+
+        Account account = createAccount(Role.STUDENT);
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()), account.getRoles());
+
+        MockMultipartFile file1 = new MockMultipartFile("images", "test1", "image/png", "test data".getBytes());
+        MockMultipartFile file2 = new MockMultipartFile("images", "test2", "image/png", "test data".getBytes());
+
+        List<PostImage> postImages = new ArrayList<>();
+        PostImage postImage = PostImage.builder()
+                .id(1L)
+                .imageUrl("post image 1")
+                .build();
+        postImages.add(postImage);
+
+        given(postImageService.saveImages(any(), any(), any())).willReturn(postImages);
+
+        mockMvc.perform(fileUpload("/community/post/{id}/post-image", postId)
+                .file(file1)
+                .file(file2)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andDo(
+                        document(
+                                "post-create-post-images" +
+                                        "",
+                                pathParameters(
+                                    parameterWithName("id").description("게시글 식별자 값")
+                                ),
+                                requestHeaders(
+                                        headerWithName(HttpHeaders.CONTENT_TYPE).description("multipart form data 타입"),
+                                        headerWithName(HttpHeaders.AUTHORIZATION).optional().description("access token 값")
+                                ),
+                                requestParts(
+                                        partWithName("images").description("게시글 이미지들")
+                                ),
+                                responseHeaders(
+                                        headerWithName(HttpHeaders.LOCATION).description("생성된 자원의 조회 URL")
+                                ),
+                                responseFields(
+                                        fieldWithPath("_embedded.postImageModelList[].id").description("게시글 이미지 식별자 값"),
+                                        fieldWithPath("_embedded.postImageModelList[].imageUrl").description("게시글 이미지 URL"),
+                                        fieldWithPath("_embedded.postImageModelList[]._links.self.href").description("해당 Api Url")
                                 )
                         )
                 );
