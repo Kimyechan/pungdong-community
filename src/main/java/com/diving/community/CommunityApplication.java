@@ -14,7 +14,10 @@ public class CommunityApplication {
             + "classpath:application.yml,"
             + "classpath:aws.yml,"
             + "classpath:database.yml,"
-            + "classpath:kafka.yml";
+            + "classpath:kafka.yml"
+            + "/home/ubuntu/config/project/pungdong/database.yml,"
+            + "/home/ubuntu/config/project/pungdong/kafka.yml,"
+            + "classpath:aws.yml";
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(CommunityApplication.class)
