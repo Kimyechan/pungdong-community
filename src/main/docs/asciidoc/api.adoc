@@ -123,3 +123,11 @@ operation::post-create-post-images[]
 [[resource-post-read-post-images]]
 === 게시글 이미지 목록 읽기
 operation::post-read-post-images[]
+
+
+[[resource-post-image]]
+== 게시글 이미지
+
+[[resource-post-image-delete]]
+=== 게시글 이미지 삭제
+operation::post-read-post-images[]

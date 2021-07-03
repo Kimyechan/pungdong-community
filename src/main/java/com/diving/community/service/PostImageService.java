@@ -1,5 +1,6 @@
 package com.diving.community.service;
 
+import com.diving.community.advice.exception.ResourceNotFoundException;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;
 import com.diving.community.domain.post.PostImage;
@@ -44,5 +45,14 @@ public class PostImageService {
     @Transactional(readOnly = true)
     public List<PostImage> findPostImages(Long postId) {
         return postImageJpaRepo.findByPostId(postId);
+    }
+
+    public void deletePostImage(Account account, Long id) {
+        PostImage postImage = postImageJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        postService.checkPostCreator(account, postImage.getPost().getWriter());
+
+        s3Uploader.deleteFileFromS3("post-image" + "/" + postImage.getImageUrl());
+        postImageJpaRepo.delete(postImage);
     }
 }
