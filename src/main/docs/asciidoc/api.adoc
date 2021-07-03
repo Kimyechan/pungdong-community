@@ -111,3 +111,7 @@ operation::post-update[]
 [[resource-post-delete]]
 === 게시글 삭제
 operation::post-delete[]
+
+[[resource-post-read-list-by-category]]
+=== 카테고리별 게시글 목록 조회
+operation::post-read-list-by-category[]

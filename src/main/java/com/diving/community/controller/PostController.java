@@ -3,11 +3,19 @@ package com.diving.community.controller;
 import com.diving.community.advice.exception.BadRequestException;
 import com.diving.community.config.security.CurrentUser;
 import com.diving.community.domain.account.Account;
+import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
 import com.diving.community.dto.post.PostInfo;
 import com.diving.community.dto.post.PostModel;
+import com.diving.community.dto.post.list.PostsModel;
+import com.diving.community.service.AccountPostService;
 import com.diving.community.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -65,5 +73,17 @@ public class PostController {
         postService.deletePost(account, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<?> readPostsByCategory(@CurrentUser Account account,
+                                                 @RequestParam Category category,
+                                                 Pageable pageable,
+                                                 PagedResourcesAssembler<PostsModel> assembler) {
+        Page<PostsModel> postsModelPage = postService.findPostsByCategory(account, category, pageable);
+
+        PagedModel<EntityModel<PostsModel>> model = assembler.toModel(postsModelPage);
+
+        return ResponseEntity.ok().body(model);
     }
 }
