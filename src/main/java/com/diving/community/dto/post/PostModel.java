@@ -14,6 +14,7 @@ public class PostModel extends RepresentationModel<PostModel> {
     public PostModel(Post post) {
         this.postResource = PostResource.builder()
                 .id(post.getId())
+                .dateOfRegistration(post.getDateOfRegistration())
                 .category(post.getCategory())
                 .tags(post.getTags())
                 .title(post.getTitle())

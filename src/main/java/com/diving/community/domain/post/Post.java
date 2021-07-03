@@ -6,6 +6,7 @@ import com.diving.community.domain.comment.Comment;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,8 @@ import java.util.List;
 public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private LocalDateTime dateOfRegistration;
 
     @Enumerated(EnumType.STRING)
     private Category category;

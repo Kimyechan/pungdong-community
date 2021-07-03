@@ -4,6 +4,7 @@ server:
 spring:
   jpa:
     properties:
+      default_batch_fetch_size: 100
       hibernate:
         jdbc:
           lob.non_contextual_creation: true
