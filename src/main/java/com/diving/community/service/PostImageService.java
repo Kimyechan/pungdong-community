@@ -40,4 +40,9 @@ public class PostImageService {
 
         return postImages;
     }
+
+    @Transactional(readOnly = true)
+    public List<PostImage> findPostImages(Long postId) {
+        return postImageJpaRepo.findByPostId(postId);
+    }
 }

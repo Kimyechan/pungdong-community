@@ -105,8 +105,19 @@ public class PostController {
         List<PostImage> postImages = postImageService.saveImages(account, postId, images);
 
         CollectionModel<PostImageModel> postImageModels = assembler.toCollectionModel(postImages);
-        URI location = linkTo(PostController.class).slash(postId).slash("post-image").withSelfRel().toUri();
+        URI location = linkTo(PostController.class).slash(postId).slash("post-image").toUri();
 
         return ResponseEntity.created(location).body(postImageModels);
+    }
+
+    @GetMapping("/{id}/post-image")
+    public ResponseEntity<?> readPostImages(@PathVariable("id") Long postId,
+                                            PostImageModelAssembler assembler) {
+        List<PostImage> postImages = postImageService.findPostImages(postId);
+
+        CollectionModel<PostImageModel> postImageModels = assembler.toCollectionModel(postImages);
+        postImageModels.add(linkTo(PostController.class).slash(postId).slash("post-image").withSelfRel());
+
+        return ResponseEntity.ok().body(postImageModels);
     }
 }
