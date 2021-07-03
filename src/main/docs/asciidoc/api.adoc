@@ -115,3 +115,19 @@ operation::post-delete[]
 [[resource-post-read-list-by-category]]
 === 카테고리별 게시글 목록 조회
 operation::post-read-list-by-category[]
+
+[[resource-post-create-post-images]]
+=== 게시글 이미지 목록 생성
+operation::post-create-post-images[]
+
+[[resource-post-read-post-images]]
+=== 게시글 이미지 목록 읽기
+operation::post-read-post-images[]
+
+
+[[resource-post-image]]
+== 게시글 이미지
+
+[[resource-post-image-delete]]
+=== 게시글 이미지 삭제
+operation::post-read-post-images[]

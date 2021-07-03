@@ -20,7 +20,7 @@ public class Account {
 
     private String password;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     private String nickName;

@@ -38,3 +38,4 @@ out/
 
 src/main/resources/database.yml
 src/main/resources/kafka.yml
+src/main/resources/aws.yml

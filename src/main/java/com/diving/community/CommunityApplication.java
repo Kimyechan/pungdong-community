@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class CommunityApplication {
     private static final String APPLICATION_LOCATIONS = "spring.config.location="
             + "classpath:application.yml,"
+            + "classpath:aws.yml,"
             + "classpath:database.yml,"
             + "classpath:kafka.yml";
 
