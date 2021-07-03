@@ -156,9 +156,6 @@ class PostControllerTest {
     public void readPost() throws Exception {
         Long postId = 1L;
 
-        Account account = createAccount(Role.STUDENT);
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()), account.getRoles());
-
         Post post = Post.builder()
                 .id(1L)
                 .dateOfRegistration(LocalDateTime.now())
@@ -172,19 +169,13 @@ class PostControllerTest {
 
         given(postService.findPost(any())).willReturn(post);
 
-        mockMvc.perform(get("/community/post/{id}", postId)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken))
+        mockMvc.perform(get("/community/post/{id}", postId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(
                         document("post-read",
                                 pathParameters(
                                     parameterWithName("id").description("게시글 식별자 값")
-                                ),
-                                requestHeaders(
-                                        headerWithName(HttpHeaders.CONTENT_TYPE).description("application json 타입"),
-                                        headerWithName(HttpHeaders.AUTHORIZATION).optional().description("access token 값")
                                 ),
                                 responseFields(
                                         fieldWithPath("postResource.id").description("게시글 식별자 값"),
@@ -297,9 +288,6 @@ class PostControllerTest {
     @Test
     @DisplayName("카테고리별 게시글 목록 조회")
     public void readPostsByCategory() throws Exception {
-        Account account = createAccount(Role.STUDENT);
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()), account.getRoles());
-
         Pageable pageable = PageRequest.of(0, 1);
         Post post = Post.builder()
                 .id(1L)
@@ -310,7 +298,7 @@ class PostControllerTest {
                 .commentCount(10)
                 .build();
         String imageUrl = "main image url";
-        String writerNickName = account.getNickName();
+        String writerNickName = "chan";
         boolean isLiked = true;
 
         List<PostsModel> postsModels = new ArrayList<>();
@@ -324,17 +312,11 @@ class PostControllerTest {
         mockMvc.perform(get("/community/post/category")
                 .param("category", Category.SHARE.toString())
                 .param("page", String.valueOf(pageable.getPageNumber()))
-                .param("size", String.valueOf(pageable.getPageSize()))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, accessToken))
+                .param("size", String.valueOf(pageable.getPageSize())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(
                         document("post-read-list-by-category",
-                                requestHeaders(
-                                        headerWithName(HttpHeaders.CONTENT_TYPE).description("application json 타입"),
-                                        headerWithName(HttpHeaders.AUTHORIZATION).optional().description("access token 값")
-                                ),
                                 requestParameters(
                                         parameterWithName("category").description("게시글 카테고리 종류"),
                                         parameterWithName("page").description("페이지 번호"),
@@ -394,8 +376,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(
                         document(
-                                "post-create-post-images" +
-                                        "",
+                                "post-create-post-images",
                                 pathParameters(
                                     parameterWithName("id").description("게시글 식별자 값")
                                 ),
@@ -413,6 +394,39 @@ class PostControllerTest {
                                         fieldWithPath("_embedded.postImageModelList[].id").description("게시글 이미지 식별자 값"),
                                         fieldWithPath("_embedded.postImageModelList[].imageUrl").description("게시글 이미지 URL"),
                                         fieldWithPath("_embedded.postImageModelList[]._links.self.href").description("해당 Api Url")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("게시글 이미지들 조회")
+    public void readPostImages() throws Exception {
+        Long postId = 1L;
+
+        List<PostImage> postImages = new ArrayList<>();
+        PostImage postImage = PostImage.builder()
+                .id(1L)
+                .imageUrl("post image 1")
+                .build();
+        postImages.add(postImage);
+
+        given(postImageService.findPostImages(any())).willReturn(postImages);
+
+        mockMvc.perform(get("/community/post/{id}/post-image", postId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document(
+                                "post-read-post-images",
+                                pathParameters(
+                                        parameterWithName("id").description("게시글 식별자 값")
+                                ),
+                                responseFields(
+                                        fieldWithPath("_embedded.postImageModelList[].id").description("게시글 이미지 식별자 값"),
+                                        fieldWithPath("_embedded.postImageModelList[].imageUrl").description("게시글 이미지 URL"),
+                                        fieldWithPath("_embedded.postImageModelList[]._links.self.href").description("단건 자원 조회 Api Url"),
+                                        fieldWithPath("_links.self.href").description("해당 Api Url")
                                 )
                         )
                 );

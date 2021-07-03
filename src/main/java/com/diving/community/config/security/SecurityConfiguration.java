@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()
-                        .antMatchers().permitAll()
+                        .antMatchers(HttpMethod.GET, "/community/post/**").permitAll()
                         .anyRequest().authenticated()
                 .and()
                     .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())

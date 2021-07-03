@@ -119,3 +119,7 @@ operation::post-read-list-by-category[]
 [[resource-post-create-post-images]]
 === 게시글 이미지 목록 생성
 operation::post-create-post-images[]
+
+[[resource-post-read-post-images]]
+=== 게시글 이미지 목록 읽기
+operation::post-read-post-images[]
