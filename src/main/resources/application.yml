@@ -16,3 +16,15 @@ spring:
 
 logging.level.org.hibernate.SQL: INFO
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+cloud:
+  aws:
+    s3:
+      bucket: pungdong
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+spring.servlet.multipart.max-file-size: 50MB
+spring.servlet.multipart.max-request-size: 50MB
