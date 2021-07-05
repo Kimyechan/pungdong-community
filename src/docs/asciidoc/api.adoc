@@ -124,6 +124,10 @@ operation::post-create-post-images[]
 === 게시글 이미지 목록 읽기
 operation::post-read-post-images[]
 
+[[resourcde-post-read-writer]]
+=== 게시글 작성자 정보 읽기
+operation::post-read-writer[]
+
 
 [[resource-post-image]]
 == 게시글 이미지

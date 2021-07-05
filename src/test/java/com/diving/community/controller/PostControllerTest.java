@@ -430,4 +430,36 @@ class PostControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("글 작성자 정보 읽기")
+    public void readPostWriter() throws Exception {
+        Long postId = 1L;
+
+        Account account = Account.builder()
+                .id(1L)
+                .nickName("chan")
+                .profileImageUrl("profile photo image url")
+                .build();
+
+        given(accountService.findWriter(any())).willReturn(account);
+
+        mockMvc.perform(get("/community/post/{id}/writer", postId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document(
+                                "post-read-writer",
+                                pathParameters(
+                                        parameterWithName("id").description("게시글 식별자 값")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("게시글 작성자 식별자 값"),
+                                        fieldWithPath("nickName").description("게시글 작성자 닉네임"),
+                                        fieldWithPath("profileImageUrl").description("게시글 작성자 프로필 이미지 URL"),
+                                        fieldWithPath("_links.self.href").description("해당 Api Url")
+                                )
+                        )
+                );
+    }
 }

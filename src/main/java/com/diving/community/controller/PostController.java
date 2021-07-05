@@ -6,11 +6,13 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
 import com.diving.community.domain.post.PostImage;
+import com.diving.community.dto.account.AccountModel;
 import com.diving.community.dto.post.PostInfo;
 import com.diving.community.dto.post.PostModel;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.dto.postImage.PostImageModel;
 import com.diving.community.dto.postImage.PostImageModelAssembler;
+import com.diving.community.service.AccountService;
 import com.diving.community.service.PostImageService;
 import com.diving.community.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PostController {
     private final PostService postService;
     private final PostImageService postImageService;
+    private final AccountService accountService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> readPost(@PathVariable("id") Long id) {
@@ -119,5 +122,15 @@ public class PostController {
         postImageModels.add(linkTo(PostController.class).slash(postId).slash("post-image").withSelfRel());
 
         return ResponseEntity.ok().body(postImageModels);
+    }
+
+    @GetMapping("{id}/writer")
+    public ResponseEntity<?> readPostWriter(@PathVariable("id") Long postId) {
+        Account writer = accountService.findWriter(postId);
+
+        AccountModel model = new AccountModel(writer);
+        model.add(linkTo(PostController.class).slash(postId).slash("writer").withSelfRel());
+
+        return ResponseEntity.ok().body(model);
     }
 }
