@@ -143,3 +143,7 @@ operation::post-read-post-images[]
 [[resource-comment-create]]
 === 댓글 작성
 operation::comment-create[]
+
+[[resource-comment-update]]
+=== 댓글 수정
+operation::comment-update[]

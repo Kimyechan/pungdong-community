@@ -36,4 +36,19 @@ public class CommentController {
 
         return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modifyComment(@CurrentUser Account account,
+                                           @PathVariable("id") Long id,
+                                           @Valid @RequestBody CommentInfo commentInfo,
+                                           BindingResult result) {
+        if (result.hasErrors()) {
+            throw new BadRequestException();
+        }
+
+        Comment comment = commentService.updateComment(account, id, commentInfo);
+        CommentModel model = new CommentModel(comment);
+
+        return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
+    }
 }
