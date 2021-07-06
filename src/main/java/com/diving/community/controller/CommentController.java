@@ -75,4 +75,12 @@ public class CommentController {
 
         return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeComment(@CurrentUser Account account,
+                                           @PathVariable("id") Long id) {
+        commentService.deleteComment(account, id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

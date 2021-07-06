@@ -76,4 +76,11 @@ public class CommentService {
 
         return new PageImpl<>(commentsModels, pageable, commentPage.getTotalElements());
     }
+
+    public void deleteComment(Account account, Long id) {
+        Comment comment = commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+        checkCommentCreator(account, comment.getWriter());
+
+        commentJpaRepo.deleteById(id);
+    }
 }

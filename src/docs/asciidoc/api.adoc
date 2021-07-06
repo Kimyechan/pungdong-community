@@ -155,3 +155,7 @@ operation::comment-read[]
 [[resource-comment-read-list]]
 === 게시글 댓글 조회
 operation::comment-read-list[]
+
+[[resource-comment-delete]]
+=== 댓글 삭제
+operation::comment-delete[]
