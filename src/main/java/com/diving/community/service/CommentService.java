@@ -23,6 +23,7 @@ public class CommentService {
 
     public Comment saveComment(Account account, Long postId, CommentInfo commentInfo) {
         Post post = postService.findPost(postId);
+        postService.plusCommentCount(post);
 
         Comment comment = Comment.builder()
                 .dateOfWriting(LocalDateTime.now())
@@ -47,7 +48,7 @@ public class CommentService {
         return comment;
     }
 
-    private void checkCommentCreator(Account account, Account writer) {
+    public void checkCommentCreator(Account account, Account writer) {
         if (account != null && !account.getId().equals(writer.getId())) {
             throw new NoPermissionsException();
         }
