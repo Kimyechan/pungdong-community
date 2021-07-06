@@ -53,4 +53,9 @@ public class CommentService {
             throw new NoPermissionsException();
         }
     }
+
+    @Transactional(readOnly = true)
+    public Comment findComment(Long id) {
+        return commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+    }
 }

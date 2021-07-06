@@ -6,6 +6,8 @@ import com.diving.community.config.security.UserAccount;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.account.Role;
 import com.diving.community.domain.comment.Comment;
+import com.diving.community.domain.post.Category;
+import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
 import com.diving.community.service.AccountService;
 import com.diving.community.service.CommentService;
@@ -25,6 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,8 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -163,6 +165,37 @@ class CommentControllerTest {
                                 ),
                                 responseHeaders(
                                         headerWithName(HttpHeaders.LOCATION).description("생성된 자원의 조회 URL")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("댓글 식별자 값"),
+                                        fieldWithPath("dateOfWriting").description("댓글 작성 시기"),
+                                        fieldWithPath("content").description("댓글 내용"),
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("댓글 단건 조회")
+    public void readPost() throws Exception {
+        Long commentId = 1L;
+
+        Comment comment = Comment.builder()
+                .id(1L)
+                .dateOfWriting(LocalDateTime.now())
+                .content("댓글 내용")
+                .build();
+
+        given(commentService.findComment(any())).willReturn(comment);
+
+        mockMvc.perform(get("/community/comment/{id}", commentId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("comment-read",
+                                pathParameters(
+                                        parameterWithName("id").description("게시글 식별자 값")
                                 ),
                                 responseFields(
                                         fieldWithPath("id").description("댓글 식별자 값"),

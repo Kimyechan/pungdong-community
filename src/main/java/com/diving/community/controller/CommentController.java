@@ -22,6 +22,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class CommentController {
     private final CommentService commentService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> readComment(@PathVariable("id") Long id) {
+        Comment comment = commentService.findComment(id);
+        CommentModel model = new CommentModel(comment);
+
+        return ResponseEntity.ok().body(model);
+    }
+
     @PostMapping("/post/{post-id}")
     public ResponseEntity<?> createComment(@CurrentUser Account account,
                                            @PathVariable("post-id") Long postId,

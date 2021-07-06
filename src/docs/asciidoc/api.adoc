@@ -147,3 +147,7 @@ operation::comment-create[]
 [[resource-comment-update]]
 === 댓글 수정
 operation::comment-update[]
+
+[[resource-comment-read]]
+=== 댓글 조회
+operation::comment-read[]
