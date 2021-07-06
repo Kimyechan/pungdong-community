@@ -89,4 +89,10 @@ public class PostService {
 
         return new PageImpl<>(postsModels, postPage.getPageable(), postPage.getTotalElements());
     }
+
+    public void plusCommentCount(Post post) {
+        post.setCommentCount(post.getCommentCount() + 1);
+
+        postJpaRepo.save(post);
+    }
 }
