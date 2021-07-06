@@ -6,8 +6,14 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.comment.Comment;
 import com.diving.community.dto.comment.CommentInfo;
 import com.diving.community.dto.comment.CommentModel;
+import com.diving.community.dto.comment.list.CommentsModel;
 import com.diving.community.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +34,16 @@ public class CommentController {
         CommentModel model = new CommentModel(comment);
 
         return ResponseEntity.ok().body(model);
+    }
+
+    @GetMapping("/post/{post-id}")
+    public ResponseEntity<?> readComments(@PathVariable("post-id") Long postId,
+                                          Pageable pageable,
+                                          PagedResourcesAssembler<CommentsModel> assembler) {
+        Page<CommentsModel> commentsModelPage = commentService.findComments(postId, pageable);
+        PagedModel<EntityModel<CommentsModel>> commentsModels = assembler.toModel(commentsModelPage);
+
+        return ResponseEntity.ok().body(commentsModels);
     }
 
     @PostMapping("/post/{post-id}")

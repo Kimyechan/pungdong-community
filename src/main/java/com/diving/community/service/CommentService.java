@@ -6,12 +6,17 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.comment.Comment;
 import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
+import com.diving.community.dto.comment.list.CommentsModel;
 import com.diving.community.repo.CommentJpaRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,5 +62,18 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Comment findComment(Long id) {
         return commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentsModel> findComments(Long postId, Pageable pageable) {
+        Page<Comment> commentPage = commentJpaRepo.findByPostIdWithWriter(postId, pageable);
+
+        List<CommentsModel> commentsModels = new ArrayList<>();
+        for (Comment comment : commentPage.getContent()) {
+            CommentsModel commentsModel = new CommentsModel(comment.getWriter(), comment);
+            commentsModels.add(commentsModel);
+        }
+
+        return new PageImpl<>(commentsModels, pageable, commentPage.getTotalElements());
     }
 }

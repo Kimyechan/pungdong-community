@@ -9,6 +9,8 @@ import com.diving.community.domain.comment.Comment;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
+import com.diving.community.dto.comment.list.CommentsModel;
+import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.service.AccountService;
 import com.diving.community.service.CommentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,12 +23,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,8 +46,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -201,6 +207,61 @@ class CommentControllerTest {
                                         fieldWithPath("id").description("댓글 식별자 값"),
                                         fieldWithPath("dateOfWriting").description("댓글 작성 시기"),
                                         fieldWithPath("content").description("댓글 내용"),
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("게시글 댓글 목록 조회")
+    public void readComments() throws Exception {
+        Long postId = 1L;
+        Pageable pageable = PageRequest.of(0, 1);
+
+        Account account = Account.builder()
+                .id(1L)
+                .nickName("닉네임")
+                .profileImageUrl("프로필 이미지 URL")
+                .build();
+
+        Comment comment = Comment.builder()
+                .id(1L)
+                .dateOfWriting(LocalDateTime.now())
+                .content("댓글 내용")
+                .build();
+
+        List<CommentsModel> commentsModels = new ArrayList<>();
+        CommentsModel commentsModel = new CommentsModel(account, comment);
+        commentsModels.add(commentsModel);
+
+        Page<CommentsModel> commentsModelPage = new PageImpl<>(commentsModels, pageable, commentsModels.size());
+
+        given(commentService.findComments(any(), any())).willReturn(commentsModelPage);
+
+        mockMvc.perform(get("/community/comment/post/{post-id}", postId)
+                .param("page", String.valueOf(pageable.getPageNumber()))
+                .param("size", String.valueOf(pageable.getPageSize())))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("comment-read-list",
+                                requestParameters(
+                                        parameterWithName("page").description("페이지 번호"),
+                                        parameterWithName("size").description("한 페이지당 크기")
+                                ),
+                                responseFields(
+                                        fieldWithPath("_embedded.commentsModelList[].accountModel.id").description("작성자 식별자 값"),
+                                        fieldWithPath("_embedded.commentsModelList[].accountModel.nickName").description("작성자 닉네임"),
+                                        fieldWithPath("_embedded.commentsModelList[].accountModel.profileImageUrl").description("작성자 프로필 이미지 URL"),
+                                        fieldWithPath("_embedded.commentsModelList[].commentModel.id").description("댓글 식별자 값"),
+                                        fieldWithPath("_embedded.commentsModelList[].commentModel.dateOfWriting").description("댓글 작성 일시"),
+                                        fieldWithPath("_embedded.commentsModelList[].commentModel.content").description("댓글 내용"),
+                                        fieldWithPath("_embedded.commentsModelList[].commentModel._links.self.href").description("해당 댓글 조회 URL"),
+                                        fieldWithPath("page.size").description("페이지당 크기"),
+                                        fieldWithPath("page.totalElements").description("전체 자원 갯수"),
+                                        fieldWithPath("page.totalPages").description("전체 페이지 수"),
+                                        fieldWithPath("page.number").description("현재 페이지 번호"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
                                 )
                         )

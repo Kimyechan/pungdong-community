@@ -151,3 +151,7 @@ operation::comment-update[]
 [[resource-comment-read]]
 === 댓글 조회
 operation::comment-read[]
+
+[[resource-comment-read-list]]
+=== 게시글 댓글 조회
+operation::comment-read-list[]
