@@ -135,3 +135,11 @@ operation::post-read-writer[]
 [[resource-post-image-delete]]
 === 게시글 이미지 삭제
 operation::post-read-post-images[]
+
+
+[[resource-comment]]
+== 댓글
+
+[[resource-comment-create]]
+=== 댓글 작성
+operation::comment-create[]
