@@ -39,10 +39,12 @@ public class AccountPostService {
     public Map<Long, Boolean> findLikePostMap(Account account) {
         Map<Long, Boolean> likeMap = new HashMap<>();
 
-        List<AccountPost> accountPosts = accountPostJpaRepo.findByAccount(account.getId());
-        for (AccountPost accountPost : accountPosts) {
-            Post post = accountPost.getPost();
-            likeMap.put(post.getId(), true);
+        if (account != null) {
+            List<AccountPost> accountPosts = accountPostJpaRepo.findByAccount(account.getId());
+            for (AccountPost accountPost : accountPosts) {
+                Post post = accountPost.getPost();
+                likeMap.put(post.getId(), true);
+            }
         }
 
         return likeMap;
