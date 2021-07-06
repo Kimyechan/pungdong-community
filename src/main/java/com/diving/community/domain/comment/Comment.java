@@ -5,6 +5,7 @@ import com.diving.community.domain.post.Post;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -17,6 +18,8 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private LocalDateTime dateOfWriting;
 
     private String content;
 
