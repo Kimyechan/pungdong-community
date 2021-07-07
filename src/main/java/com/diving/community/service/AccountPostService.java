@@ -49,4 +49,8 @@ public class AccountPostService {
 
         return likeMap;
     }
+
+    public AccountPost saveAccountPost(AccountPost accountPost) {
+        return accountPostJpaRepo.save(accountPost);
+    }
 }

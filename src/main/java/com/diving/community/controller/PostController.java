@@ -12,6 +12,7 @@ import com.diving.community.dto.post.PostModel;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.dto.postImage.PostImageModel;
 import com.diving.community.dto.postImage.PostImageModelAssembler;
+import com.diving.community.service.AccountPostService;
 import com.diving.community.service.AccountService;
 import com.diving.community.service.PostImageService;
 import com.diving.community.service.PostService;
@@ -132,5 +133,13 @@ public class PostController {
         model.add(linkTo(PostController.class).slash(postId).slash("writer").withSelfRel());
 
         return ResponseEntity.ok().body(model);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> likePost(@CurrentUser Account account,
+                                      @PathVariable("id") Long postId) {
+        postService.enrollLikePost(account, postId);
+
+        return ResponseEntity.noContent().build();
     }
 }
