@@ -136,6 +136,10 @@ operation::post-create-like[]
 === 게시글 좋아요 취소
 operation::post-delete-like[]
 
+[[resource-post-read-like-list]]
+=== 좋아요한 게시글 목록
+operation::post-read-like-list[]
+
 
 [[resource-post-image]]
 == 게시글 이미지
