@@ -293,4 +293,52 @@ class CommentControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("대댓글 작성")
+    public void createCommentComment() throws Exception {
+        Long commentId = 1L;
+
+        Account account = createAccount(Role.STUDENT);
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()), account.getRoles());
+
+        CommentInfo commentInfo = CommentInfo.builder()
+                .content("도움이 되는 정보입니다")
+                .build();
+
+        Comment comment = Comment.builder()
+                .id(2L)
+                .content(commentInfo.getContent())
+                .dateOfWriting(LocalDateTime.now())
+                .build();
+
+        given(commentService.saveCommentComment(any(), any(), any())).willReturn(comment);
+
+        mockMvc.perform(post("/community/comment/comment/{id}", commentId)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .content(objectMapper.writeValueAsString(commentInfo)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andDo(
+                        document("comment-comment-create",
+                                pathParameters(
+                                        parameterWithName("id").description("부모 댓글 식별자 값")
+                                ),
+                                requestHeaders(
+                                        headerWithName(HttpHeaders.CONTENT_TYPE).description("application json 타입"),
+                                        headerWithName(HttpHeaders.AUTHORIZATION).optional().description("access token 값")
+                                ),
+                                responseHeaders(
+                                        headerWithName(HttpHeaders.LOCATION).description("생성된 자원의 조회 URL")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("대댓글 식별자 값"),
+                                        fieldWithPath("dateOfWriting").description("대댓글 작성 시기"),
+                                        fieldWithPath("content").description("대댓글 내용"),
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
 }

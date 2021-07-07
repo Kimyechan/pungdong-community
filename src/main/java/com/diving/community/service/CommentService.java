@@ -83,4 +83,19 @@ public class CommentService {
 
         commentJpaRepo.deleteById(id);
     }
+
+    public Comment saveCommentComment(Account account, Long id, CommentInfo commentInfo) {
+        Comment parentComment = commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+        Post post = parentComment.getPost();
+
+        Comment commentComment = Comment.builder()
+                .dateOfWriting(LocalDateTime.now())
+                .content(commentInfo.getContent())
+                .writer(account)
+                .parent(parentComment)
+                .post(post)
+                .build();
+
+        return commentJpaRepo.save(commentComment);
+    }
 }

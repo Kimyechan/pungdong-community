@@ -83,4 +83,19 @@ public class CommentController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/comment/{id}")
+    public ResponseEntity<?> createCommentComment(@CurrentUser Account account,
+                                                  @PathVariable("id") Long id,
+                                                  @Valid @RequestBody CommentInfo commentInfo,
+                                                  BindingResult result) {
+        if (result.hasErrors()) {
+            throw new BadRequestException();
+        }
+
+        Comment comment = commentService.saveCommentComment(account, id, commentInfo);
+        CommentModel model = new CommentModel(comment);
+
+        return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
+    }
 }

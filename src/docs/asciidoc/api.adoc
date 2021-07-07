@@ -159,3 +159,7 @@ operation::comment-read-list[]
 [[resource-comment-delete]]
 === 댓글 삭제
 operation::comment-delete[]
+
+[[resource-comment-comment-create]]
+=== 대댓글 작성
+operation::comment-comment-create[]
