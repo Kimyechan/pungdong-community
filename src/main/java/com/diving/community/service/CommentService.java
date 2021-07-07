@@ -6,6 +6,7 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.comment.Comment;
 import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
+import com.diving.community.dto.comment.list.CommentCommentsModel;
 import com.diving.community.dto.comment.list.CommentsModel;
 import com.diving.community.repo.CommentJpaRepo;
 import lombok.RequiredArgsConstructor;
@@ -82,5 +83,33 @@ public class CommentService {
         checkCommentCreator(account, comment.getWriter());
 
         commentJpaRepo.deleteById(id);
+    }
+
+    public Comment saveCommentComment(Account account, Long id, CommentInfo commentInfo) {
+        Comment parentComment = commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+        Post post = parentComment.getPost();
+
+        Comment commentComment = Comment.builder()
+                .dateOfWriting(LocalDateTime.now())
+                .content(commentInfo.getContent())
+                .writer(account)
+                .parent(parentComment)
+                .post(post)
+                .build();
+
+        return commentJpaRepo.save(commentComment);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentCommentsModel> findCommentComments(Long parentCommentId, Pageable pageable) {
+        Page<Comment> commentPage = commentJpaRepo.findByParentCommentId(parentCommentId, pageable);
+
+        List<CommentCommentsModel> commentCommentsModels = new ArrayList<>();
+        for (Comment comment : commentPage.getContent()) {
+            CommentCommentsModel commentsModel = new CommentCommentsModel(comment.getWriter(), comment);
+            commentCommentsModels.add(commentsModel);
+        }
+
+        return new PageImpl<>(commentCommentsModels, pageable, commentPage.getTotalElements());
     }
 }

@@ -1,5 +1,6 @@
 package com.diving.community.dto.post.list;
 
+import com.diving.community.controller.CommentController;
 import com.diving.community.controller.PostController;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
@@ -44,7 +45,7 @@ public class PostsModel extends RepresentationModel<PostsModel> {
         add(linkTo(PostController.class).slash(post.getId()).withRel("post"));
         add(linkTo(PostController.class).slash(post.getId()).slash("post-image").withRel("post-images"));
         add(linkTo(PostController.class).slash(post.getId()).slash("writer").withRel("writer"));
-        add(linkTo(PostController.class).slash(post.getId()).slash("comment").withRel("comments"));
+        add(linkTo(CommentController.class).slash("post").slash(post.getId()).withRel("comments"));
         add(linkTo(PostController.class).slash(post.getId()).slash("like").withRel("like"));
     }
 }
