@@ -55,7 +55,12 @@ public class AccountPostService {
         return likeMap;
     }
 
-    public AccountPost saveAccountPost(AccountPost accountPost) {
+    public AccountPost saveAccountPost(Account account, Post post) {
+        AccountPost accountPost = AccountPost.builder()
+                .account(account)
+                .post(post)
+                .build();
+
         return accountPostJpaRepo.save(accountPost);
     }
 

@@ -99,17 +99,14 @@ public class PostService {
 
     public void enrollLikePost(Account account, Long postId) {
         Post post = findPost(postId);
+        post.setLikeCount(post.getLikeCount() + 1);
 
-        AccountPost accountPost = AccountPost.builder()
-                .account(account)
-                .post(post)
-                .build();
-
-        accountPostService.saveAccountPost(accountPost);
+        accountPostService.saveAccountPost(account, post);
     }
 
     public void cancelLikePost(Account account, Long postId) {
         Post post = findPost(postId);
+        post.setLikeCount(post.getLikeCount() - 1);
 
         accountPostService.deleteLikePost(account, post);
     }
