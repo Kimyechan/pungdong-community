@@ -13,4 +13,10 @@ public interface CommentJpaRepo extends JpaRepository<Comment, Long> {
             countQuery = "select count(c) from Comment c where c.post.id = :postId and c.parent is null"
     )
     Page<Comment> findByPostIdWithWriter(@Param("postId") Long postId, Pageable pageable);
+
+    @Query(
+            value = "select c from Comment c join fetch c.writer where c.parent.id = :parentCommentId",
+            countQuery = "select count(c) from Comment c where c.parent.id = :parentCommentId"
+    )
+    Page<Comment> findByParentCommentId(@Param("parentCommentId") Long parentCommentId, Pageable pageable);
 }

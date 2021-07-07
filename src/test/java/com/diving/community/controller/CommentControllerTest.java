@@ -6,14 +6,11 @@ import com.diving.community.config.security.UserAccount;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.account.Role;
 import com.diving.community.domain.comment.Comment;
-import com.diving.community.domain.post.Category;
-import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
+import com.diving.community.dto.comment.list.CommentCommentsModel;
 import com.diving.community.dto.comment.list.CommentsModel;
-import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.service.AccountService;
 import com.diving.community.service.CommentService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,15 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -128,7 +123,8 @@ class CommentControllerTest {
                                         fieldWithPath("id").description("댓글 식별자 값"),
                                         fieldWithPath("dateOfWriting").description("댓글 작성 시기"),
                                         fieldWithPath("content").description("댓글 내용"),
-                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL"),
+                                        fieldWithPath("_links.comment-comments.href").description("해당 댓글 대댓글 목록 조회 URL")
                                 )
                         )
                 );
@@ -176,7 +172,8 @@ class CommentControllerTest {
                                         fieldWithPath("id").description("댓글 식별자 값"),
                                         fieldWithPath("dateOfWriting").description("댓글 작성 시기"),
                                         fieldWithPath("content").description("댓글 내용"),
-                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL"),
+                                        fieldWithPath("_links.comment-comments.href").description("해당 댓글 대댓글 목록 조회 URL")
                                 )
                         )
                 );
@@ -207,7 +204,8 @@ class CommentControllerTest {
                                         fieldWithPath("id").description("댓글 식별자 값"),
                                         fieldWithPath("dateOfWriting").description("댓글 작성 시기"),
                                         fieldWithPath("content").description("댓글 내용"),
-                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL"),
+                                        fieldWithPath("_links.comment-comments.href").description("해당 댓글 대댓글 목록 조회 URL")
                                 )
                         )
                 );
@@ -258,6 +256,7 @@ class CommentControllerTest {
                                         fieldWithPath("_embedded.commentsModelList[].commentModel.dateOfWriting").description("댓글 작성 일시"),
                                         fieldWithPath("_embedded.commentsModelList[].commentModel.content").description("댓글 내용"),
                                         fieldWithPath("_embedded.commentsModelList[].commentModel._links.self.href").description("해당 댓글 조회 URL"),
+                                        fieldWithPath("_embedded.commentsModelList[].commentModel._links.comment-comments.href").description("해당 댓글 대댓글 목록 조회 URL"),
                                         fieldWithPath("page.size").description("페이지당 크기"),
                                         fieldWithPath("page.totalElements").description("전체 자원 갯수"),
                                         fieldWithPath("page.totalPages").description("전체 페이지 수"),
@@ -314,7 +313,7 @@ class CommentControllerTest {
 
         given(commentService.saveCommentComment(any(), any(), any())).willReturn(comment);
 
-        mockMvc.perform(post("/community/comment/comment/{id}", commentId)
+        mockMvc.perform(post("/community/comment/{id}/comment", commentId)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .content(objectMapper.writeValueAsString(commentInfo)))
@@ -336,6 +335,61 @@ class CommentControllerTest {
                                         fieldWithPath("id").description("대댓글 식별자 값"),
                                         fieldWithPath("dateOfWriting").description("대댓글 작성 시기"),
                                         fieldWithPath("content").description("대댓글 내용"),
+                                        fieldWithPath("_links.self.href").description("해당 자원 URL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("대댓글 목록 조회")
+    public void readCommentComments() throws Exception {
+        Long commentId = 1L;
+        Pageable pageable = PageRequest.of(0, 1);
+
+        Account account = Account.builder()
+                .id(1L)
+                .nickName("닉네임")
+                .profileImageUrl("프로필 이미지 URL")
+                .build();
+
+        Comment comment = Comment.builder()
+                .id(1L)
+                .dateOfWriting(LocalDateTime.now())
+                .content("댓글 내용")
+                .build();
+
+        List<CommentCommentsModel> commentCommentsModels = new ArrayList<>();
+        CommentCommentsModel commentCommentsModel = new CommentCommentsModel(account, comment);
+        commentCommentsModels.add(commentCommentsModel);
+
+        Page<CommentCommentsModel> commentsModelPage = new PageImpl<>(commentCommentsModels, pageable, commentCommentsModels.size());
+
+        given(commentService.findCommentComments(commentId, pageable)).willReturn(commentsModelPage);
+
+        mockMvc.perform(get("/community/comment/{id}/comment", commentId)
+                .param("page", String.valueOf(pageable.getPageNumber()))
+                .param("size", String.valueOf(pageable.getPageSize())))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("comment-comment-read-list",
+                                requestParameters(
+                                        parameterWithName("page").description("페이지 번호"),
+                                        parameterWithName("size").description("한 페이지당 크기")
+                                ),
+                                responseFields(
+                                        fieldWithPath("_embedded.commentCommentsModelList[].accountModel.id").description("작성자 식별자 값"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].accountModel.nickName").description("작성자 닉네임"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].accountModel.profileImageUrl").description("작성자 프로필 이미지 URL"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].commentCommentModel.id").description("대댓글 식별자 값"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].commentCommentModel.dateOfWriting").description("대댓글 작성 일시"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].commentCommentModel.content").description("대댓글 내용"),
+                                        fieldWithPath("_embedded.commentCommentsModelList[].commentCommentModel._links.self.href").description("해당 대댓글 조회 URL"),
+                                        fieldWithPath("page.size").description("페이지당 크기"),
+                                        fieldWithPath("page.totalElements").description("전체 자원 갯수"),
+                                        fieldWithPath("page.totalPages").description("전체 페이지 수"),
+                                        fieldWithPath("page.number").description("현재 페이지 번호"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
                                 )
                         )

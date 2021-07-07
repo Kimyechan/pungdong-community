@@ -10,17 +10,16 @@ import java.time.LocalDateTime;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Getter
-public class CommentModel extends RepresentationModel<CommentModel> {
+public class CommentCommentModel extends RepresentationModel<CommentCommentModel> {
     private Long id;
     private LocalDateTime dateOfWriting;
     private String content;
 
-    public CommentModel(Comment comment) {
+    public CommentCommentModel(Comment comment) {
         this.id = comment.getId();
         this.dateOfWriting = comment.getDateOfWriting();
         this.content = comment.getContent();
 
         add(linkTo(CommentController.class).slash(comment.getId()).withSelfRel());
-        add(linkTo(CommentController.class).slash(comment.getId()).slash("comment").withRel("comment-comments"));
     }
 }
