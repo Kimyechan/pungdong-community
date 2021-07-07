@@ -98,4 +98,5 @@ public class CommentController {
 
         return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
     }
+
 }
