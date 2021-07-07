@@ -4,6 +4,7 @@ import com.diving.community.advice.exception.BadRequestException;
 import com.diving.community.config.security.CurrentUser;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.comment.Comment;
+import com.diving.community.dto.comment.CommentCommentModel;
 import com.diving.community.dto.comment.CommentInfo;
 import com.diving.community.dto.comment.CommentModel;
 import com.diving.community.dto.comment.list.CommentCommentsModel;
@@ -95,7 +96,7 @@ public class CommentController {
         }
 
         Comment comment = commentService.saveCommentComment(account, id, commentInfo);
-        CommentModel model = new CommentModel(comment);
+        CommentCommentModel model = new CommentCommentModel(comment);
 
         return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
     }
