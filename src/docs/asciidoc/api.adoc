@@ -132,6 +132,10 @@ operation::post-read-writer[]
 === 게시글 좋아요 등록
 operation::post-create-like[]
 
+[[resource-post-delete-like]]
+=== 게시글 좋아요 취소
+operation::post-delete-like[]
+
 
 [[resource-post-image]]
 == 게시글 이미지

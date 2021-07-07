@@ -53,4 +53,8 @@ public class AccountPostService {
     public AccountPost saveAccountPost(AccountPost accountPost) {
         return accountPostJpaRepo.save(accountPost);
     }
+
+    public void deleteLikePost(Account account, Post post) {
+        accountPostJpaRepo.deleteByAccountAndPost(account, post);
+    }
 }

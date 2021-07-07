@@ -107,4 +107,10 @@ public class PostService {
 
         accountPostService.saveAccountPost(accountPost);
     }
+
+    public void cancelLikePost(Account account, Long postId) {
+        Post post = findPost(postId);
+
+        accountPostService.deleteLikePost(account, post);
+    }
 }

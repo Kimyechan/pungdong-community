@@ -142,4 +142,12 @@ public class PostController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<?> unlikePost(@CurrentUser Account account,
+                                        @PathVariable("id") Long postId) {
+        postService.cancelLikePost(account, postId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
