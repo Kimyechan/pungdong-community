@@ -2,6 +2,7 @@ package com.diving.community.controller;
 
 import com.diving.community.advice.exception.BadRequestException;
 import com.diving.community.config.security.CurrentUser;
+import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
@@ -12,6 +13,7 @@ import com.diving.community.dto.post.PostModel;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.dto.postImage.PostImageModel;
 import com.diving.community.dto.postImage.PostImageModelAssembler;
+import com.diving.community.service.AccountPostService;
 import com.diving.community.service.AccountService;
 import com.diving.community.service.PostImageService;
 import com.diving.community.service.PostService;
@@ -42,6 +44,7 @@ public class PostController {
     private final PostService postService;
     private final PostImageService postImageService;
     private final AccountService accountService;
+    private final AccountPostService accountPostService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> readPost(@PathVariable("id") Long id) {
@@ -130,6 +133,33 @@ public class PostController {
 
         AccountModel model = new AccountModel(writer);
         model.add(linkTo(PostController.class).slash(postId).slash("writer").withSelfRel());
+
+        return ResponseEntity.ok().body(model);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> likePost(@CurrentUser Account account,
+                                      @PathVariable("id") Long postId) {
+        postService.enrollLikePost(account, postId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<?> unlikePost(@CurrentUser Account account,
+                                        @PathVariable("id") Long postId) {
+        postService.cancelLikePost(account, postId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<?> readMyLikePosts(@CurrentUser Account account,
+                                             Pageable pageable,
+                                             PagedResourcesAssembler<PostsModel> assembler) {
+        Page<PostsModel> postsModelPage = accountPostService.findMyLikePosts(account, pageable);
+
+        PagedModel<EntityModel<PostsModel>> model = assembler.toModel(postsModelPage);
 
         return ResponseEntity.ok().body(model);
     }

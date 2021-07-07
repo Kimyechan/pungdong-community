@@ -128,6 +128,18 @@ operation::post-read-post-images[]
 === 게시글 작성자 정보 읽기
 operation::post-read-writer[]
 
+[[resource-post-create-like]]
+=== 게시글 좋아요 등록
+operation::post-create-like[]
+
+[[resource-post-delete-like]]
+=== 게시글 좋아요 취소
+operation::post-delete-like[]
+
+[[resource-post-read-like-list]]
+=== 좋아요한 게시글 목록
+operation::post-read-like-list[]
+
 
 [[resource-post-image]]
 == 게시글 이미지
