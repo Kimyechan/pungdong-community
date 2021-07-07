@@ -6,6 +6,7 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.comment.Comment;
 import com.diving.community.dto.comment.CommentInfo;
 import com.diving.community.dto.comment.CommentModel;
+import com.diving.community.dto.comment.list.CommentCommentsModel;
 import com.diving.community.dto.comment.list.CommentsModel;
 import com.diving.community.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/comment/{id}")
+    @PostMapping("/{id}/comment")
     public ResponseEntity<?> createCommentComment(@CurrentUser Account account,
                                                   @PathVariable("id") Long id,
                                                   @Valid @RequestBody CommentInfo commentInfo,
@@ -99,4 +100,13 @@ public class CommentController {
         return ResponseEntity.created(linkTo(CommentController.class).slash(comment.getId()).toUri()).body(model);
     }
 
+    @GetMapping("/{id}/comment")
+    public ResponseEntity<?> readCommentComments(@PathVariable("id") Long id,
+                                                 Pageable pageable,
+                                                 PagedResourcesAssembler<CommentCommentsModel> assembler) {
+        Page<CommentCommentsModel> modelPage = commentService.findCommentComments(id, pageable);
+        PagedModel<EntityModel<CommentCommentsModel>> model = assembler.toModel(modelPage);
+
+        return ResponseEntity.ok().body(model);
+    }
 }
