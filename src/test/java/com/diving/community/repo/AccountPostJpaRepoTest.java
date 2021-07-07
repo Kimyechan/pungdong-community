@@ -32,7 +32,6 @@ class AccountPostJpaRepoTest {
         for (int i = 0; i < 5; i++) {
             Post post = Post.builder().build();
             Post savedPost = em.persist(post);
-
             AccountPost accountPost = AccountPost.builder()
                     .post(savedPost)
                     .account(savedAccount)

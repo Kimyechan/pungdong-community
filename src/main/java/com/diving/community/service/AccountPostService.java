@@ -3,11 +3,16 @@ package com.diving.community.service;
 import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;
+import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.repo.AccountPostJpaRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,5 +53,36 @@ public class AccountPostService {
         }
 
         return likeMap;
+    }
+
+    public AccountPost saveAccountPost(Account account, Post post) {
+        AccountPost accountPost = AccountPost.builder()
+                .account(account)
+                .post(post)
+                .build();
+
+        return accountPostJpaRepo.save(accountPost);
+    }
+
+    public void deleteLikePost(Account account, Post post) {
+        accountPostJpaRepo.deleteByAccountAndPost(account, post);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostsModel> findMyLikePosts(Account account, Pageable pageable) {
+        Page<AccountPost> accountPostPage = accountPostJpaRepo.findByAccount(account.getId(), pageable);
+
+        List<PostsModel> postsModels = new ArrayList<>();
+        for (AccountPost accountPost : accountPostPage.getContent()) {
+            Post post = accountPost.getPost();
+            String mainPostImageUrl = post.getPostImages().get(0).getImageUrl();
+            String writerNickname = post.getWriter().getNickName();
+            boolean isLiked = true;
+
+            PostsModel postsModel = new PostsModel(post, mainPostImageUrl, writerNickname, isLiked);
+            postsModels.add(postsModel);
+        }
+
+        return new PageImpl<>(postsModels, accountPostPage.getPageable(), accountPostPage.getTotalElements());
     }
 }

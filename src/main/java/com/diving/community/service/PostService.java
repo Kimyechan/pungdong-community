@@ -2,6 +2,7 @@ package com.diving.community.service;
 
 import com.diving.community.advice.exception.NoPermissionsException;
 import com.diving.community.advice.exception.ResourceNotFoundException;
+import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
@@ -94,5 +95,19 @@ public class PostService {
         post.setCommentCount(post.getCommentCount() + 1);
 
         postJpaRepo.save(post);
+    }
+
+    public void enrollLikePost(Account account, Long postId) {
+        Post post = findPost(postId);
+        post.setLikeCount(post.getLikeCount() + 1);
+
+        accountPostService.saveAccountPost(account, post);
+    }
+
+    public void cancelLikePost(Account account, Long postId) {
+        Post post = findPost(postId);
+        post.setLikeCount(post.getLikeCount() - 1);
+
+        accountPostService.deleteLikePost(account, post);
     }
 }
