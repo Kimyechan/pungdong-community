@@ -90,8 +90,10 @@ public class CommentService {
     }
 
     public Comment saveCommentComment(Account account, Long id, CommentInfo commentInfo) {
-        Comment parentComment = commentJpaRepo.findById(id).orElseThrow(ResourceNotFoundException::new);
+        Comment parentComment = commentJpaRepo.findByIdWithWriterAndPost(id).orElseThrow(ResourceNotFoundException::new);
         Post post = parentComment.getPost();
+
+        commentKafkaProducer.sendCommentCommentCreateEvent(account, parentComment.getWriter(), post, post.getWriter());
 
         Comment commentComment = Comment.builder()
                 .dateOfWriting(LocalDateTime.now())

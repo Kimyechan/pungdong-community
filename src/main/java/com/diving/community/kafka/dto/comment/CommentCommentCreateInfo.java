@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CommentCreateInfo {
+public class CommentCommentCreateInfo {
     private String postWriterId;
+    private String commentWriterId;
     private String postId;
-    private String postTitle;
-    private String commentWriterNickname;
+    private String commentCommentWriterNickname;
 }
