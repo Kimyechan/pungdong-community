@@ -1,6 +1,7 @@
-package com.diving.community.kafka;
+package com.diving.community.kafka.consumer;
 
 import com.diving.community.domain.account.Account;
+import com.diving.community.kafka.dto.account.AccountInfo;
 import com.diving.community.repo.AccountJpaRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
