@@ -8,6 +8,7 @@ import com.diving.community.domain.post.Post;
 import com.diving.community.dto.comment.CommentInfo;
 import com.diving.community.dto.comment.list.CommentCommentsModel;
 import com.diving.community.dto.comment.list.CommentsModel;
+import com.diving.community.kafka.producer.CommentKafkaProducer;
 import com.diving.community.repo.CommentJpaRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,10 +27,13 @@ import java.util.List;
 public class CommentService {
     private final CommentJpaRepo commentJpaRepo;
     private final PostService postService;
+    private final CommentKafkaProducer commentKafkaProducer;
 
     public Comment saveComment(Account account, Long postId, CommentInfo commentInfo) {
         Post post = postService.findPost(postId);
         postService.plusCommentCount(post);
+
+        commentKafkaProducer.sendCommentCreateEvent(post, post.getWriter(), account);
 
         Comment comment = Comment.builder()
                 .dateOfWriting(LocalDateTime.now())
