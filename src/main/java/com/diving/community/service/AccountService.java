@@ -1,6 +1,6 @@
 package com.diving.community.service;
 
-import com.diving.community.advice.exception.ResourceNotFoundException;
+import com.diving.community.exception.ResourceNotFoundException;
 import com.diving.community.config.security.UserAccount;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;

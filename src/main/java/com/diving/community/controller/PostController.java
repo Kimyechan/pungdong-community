@@ -1,8 +1,7 @@
 package com.diving.community.controller;
 
-import com.diving.community.advice.exception.BadRequestException;
+import com.diving.community.exception.BadRequestException;
 import com.diving.community.config.security.CurrentUser;
-import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;

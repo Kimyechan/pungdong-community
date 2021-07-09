@@ -1,13 +1,11 @@
 package com.diving.community.service;
 
-import com.diving.community.advice.exception.NoPermissionsException;
-import com.diving.community.advice.exception.ResourceNotFoundException;
-import com.diving.community.domain.AccountPost;
+import com.diving.community.exception.NoPermissionsException;
+import com.diving.community.exception.ResourceNotFoundException;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Category;
 import com.diving.community.domain.post.Post;
 import com.diving.community.dto.post.PostInfo;
-import com.diving.community.dto.post.PostModel;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.repo.PostJpaRepo;
 import lombok.RequiredArgsConstructor;
