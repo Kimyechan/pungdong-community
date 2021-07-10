@@ -148,6 +148,7 @@ class PostControllerTest {
                                         fieldWithPath("postResource.content").description("게시글 내용"),
                                         fieldWithPath("postResource.likeCount").description("게시글 좋아요 수"),
                                         fieldWithPath("postResource.commentCount").description("게시글 댓글 수"),
+                                        fieldWithPath("postResource.liked").description("게시글 좋아요 여부"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
                                 )
                         )
@@ -171,6 +172,7 @@ class PostControllerTest {
                 .build();
 
         given(postService.findPost(any())).willReturn(post);
+        given(accountPostService.checkLikePost(any(), any())).willReturn(true);
 
         mockMvc.perform(get("/community/post/{id}", postId))
                 .andDo(print())
@@ -189,6 +191,7 @@ class PostControllerTest {
                                         fieldWithPath("postResource.content").description("게시글 내용"),
                                         fieldWithPath("postResource.likeCount").description("게시글 좋아요 수"),
                                         fieldWithPath("postResource.commentCount").description("게시글 댓글 수"),
+                                        fieldWithPath("postResource.liked").description("게시글 좋아요 여부"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
                                 )
                         )
@@ -222,6 +225,7 @@ class PostControllerTest {
                 .build();
 
         given(postService.updatePostInfo(any(), any(), any())).willReturn(post);
+        given(accountPostService.checkLikePost(any(), any())).willReturn(true);
 
         mockMvc.perform(put("/community/post/{id}", postId)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -256,6 +260,7 @@ class PostControllerTest {
                                         fieldWithPath("postResource.content").description("게시글 내용"),
                                         fieldWithPath("postResource.likeCount").description("게시글 좋아요 수"),
                                         fieldWithPath("postResource.commentCount").description("게시글 댓글 수"),
+                                        fieldWithPath("postResource.liked").description("게시글 좋아요 여부"),
                                         fieldWithPath("_links.self.href").description("해당 자원 URL")
                                 )
                         )

@@ -11,7 +11,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class PostModel extends RepresentationModel<PostModel> {
     private final PostResource postResource;
 
-    public PostModel(Post post) {
+    public PostModel(Post post, boolean isLiked) {
         this.postResource = PostResource.builder()
                 .id(post.getId())
                 .dateOfRegistration(post.getDateOfRegistration())
@@ -21,6 +21,7 @@ public class PostModel extends RepresentationModel<PostModel> {
                 .content(post.getContent())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
+                .isLiked(isLiked)
                 .build();
 
         add(linkTo(PostController.class).slash(post.getId()).withSelfRel());
