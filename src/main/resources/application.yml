@@ -2,6 +2,8 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: msa-community-service
   jpa:
     properties:
       default_batch_fetch_size: 100
@@ -13,6 +15,14 @@ spring:
         format_sql: true
     show-sql: true
   jwt.secret: jwt_secret_key
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: 52.78.56.229
+  client:
+    service-url:
+      defaultZone: http://13.209.209.29:8761/eureka/
 
 logging.level.org.hibernate.SQL: INFO
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
