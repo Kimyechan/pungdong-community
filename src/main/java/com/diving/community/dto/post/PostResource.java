@@ -26,4 +26,6 @@ public class PostResource {
     private Integer likeCount;
 
     private Integer commentCount;
+
+    private boolean isLiked;
 }

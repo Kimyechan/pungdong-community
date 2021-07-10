@@ -46,9 +46,12 @@ public class PostController {
     private final AccountPostService accountPostService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> readPost(@PathVariable("id") Long id) {
+    public ResponseEntity<?> readPost(@CurrentUser Account account,
+                                      @PathVariable("id") Long id) {
         Post post = postService.findPost(id);
-        PostModel model = new PostModel(post);
+        boolean isLiked = accountPostService.checkLikePost(account, id);
+
+        PostModel model = new PostModel(post, isLiked);
 
         return ResponseEntity.ok().body(model);
     }
@@ -62,7 +65,7 @@ public class PostController {
         }
 
         Post post = postService.savePostInfo(account, postInfo);
-        PostModel model = new PostModel(post);
+        PostModel model = new PostModel(post, false);
 
         return ResponseEntity.created(linkTo(PostController.class).slash(post.getId()).toUri()).body(model);
     }
@@ -77,7 +80,8 @@ public class PostController {
         }
 
         Post post = postService.updatePostInfo(account, id, postInfo);
-        PostModel model = new PostModel(post);
+        boolean isLiked = accountPostService.checkLikePost(account, id);
+        PostModel model = new PostModel(post, isLiked);
 
         return ResponseEntity.created(linkTo(PostController.class).slash(post.getId()).toUri()).body(model);
     }
