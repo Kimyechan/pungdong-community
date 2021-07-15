@@ -24,7 +24,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> tags;
 
     private String title;

@@ -24,4 +24,17 @@ public class AccountKafkaConsumer {
 
         accountJpaRepo.save(account);
     }
+
+    @KafkaListener(topics = "update-account", groupId = "community")
+    public void consumeAccountUpdateEvent(AccountInfo accountInfo) {
+        Account account = Account.builder()
+                .id(Long.valueOf(accountInfo.getId()))
+                .password(accountInfo.getPassword())
+                .roles(accountInfo.getRoles())
+                .nickName(accountInfo.getNickName())
+                .profileImageUrl(accountInfo.getProfileImageUrl())
+                .build();
+
+        accountJpaRepo.save(account);
+    }
 }
