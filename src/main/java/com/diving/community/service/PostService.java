@@ -78,7 +78,7 @@ public class PostService {
 
         List<PostsModel> postsModels = new ArrayList<>();
         for (Post post : postPage.getContent()) {
-            String mainPostImageUrl = post.getPostImages().get(0).getImageUrl();
+            String mainPostImageUrl = findPostMainImageUrl(post.getId());
             String writerNickname = post.getWriter().getNickName();
             boolean isLiked = likePostMap.getOrDefault(post.getId(), false);
 
@@ -87,6 +87,16 @@ public class PostService {
         }
 
         return new PageImpl<>(postsModels, postPage.getPageable(), postPage.getTotalElements());
+    }
+
+    public String findPostMainImageUrl(Long postId) {
+        Post post = findPost(postId);
+
+        if (post.getPostImages().isEmpty()) {
+            return "";
+        } else {
+            return post.getPostImages().get(0).getImageUrl();
+        }
     }
 
     public void plusCommentCount(Post post) {
