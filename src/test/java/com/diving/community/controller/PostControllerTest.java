@@ -23,10 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -296,7 +293,7 @@ class PostControllerTest {
     @Test
     @DisplayName("카테고리별 게시글 목록 조회")
     public void readPostsByCategory() throws Exception {
-        Pageable pageable = PageRequest.of(0, 1);
+        Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "id"));
         Post post = Post.builder()
                 .id(1L)
                 .dateOfRegistration(LocalDateTime.now())
@@ -320,7 +317,8 @@ class PostControllerTest {
         mockMvc.perform(get("/community/post/category")
                 .param("category", Category.SHARE.toString())
                 .param("page", String.valueOf(pageable.getPageNumber()))
-                .param("size", String.valueOf(pageable.getPageSize())))
+                .param("size", String.valueOf(pageable.getPageSize()))
+                .param("sort", "id,desc"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(
@@ -328,7 +326,8 @@ class PostControllerTest {
                                 requestParameters(
                                         parameterWithName("category").description("게시글 카테고리 종류"),
                                         parameterWithName("page").description("페이지 번호"),
-                                        parameterWithName("size").description("한 페이지당 크기")
+                                        parameterWithName("size").description("한 페이지당 크기"),
+                                        parameterWithName("sort").description("정렬 기준")
                                 ),
                                 responseFields(
                                         fieldWithPath("_embedded.postsModelList[].id").description("게시글 식별자 값"),
