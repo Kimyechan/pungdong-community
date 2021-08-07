@@ -5,6 +5,7 @@ import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;
 import com.diving.community.domain.post.PostImage;
 import com.diving.community.dto.post.list.PostsModel;
+import com.diving.community.exception.BadRequestException;
 import com.diving.community.repo.AccountPostJpaRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,10 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +55,22 @@ public class AccountPostService {
     }
 
     public AccountPost saveAccountPost(Account account, Post post) {
+        checkAlreadyLikePost(account, post);
+
         AccountPost accountPost = AccountPost.builder()
                 .account(account)
                 .post(post)
                 .build();
 
         return accountPostJpaRepo.save(accountPost);
+    }
+
+    public void checkAlreadyLikePost(Account account, Post post) {
+        Optional<AccountPost> accountPost = accountPostJpaRepo.findByAccountAndPost(account, post);
+
+        if (accountPost.isPresent()) {
+            throw new BadRequestException("이미 좋아요한 게시물 입니다");
+        }
     }
 
     public void deleteLikePost(Account account, Post post) {

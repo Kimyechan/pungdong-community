@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountPostJpaRepo extends JpaRepository<AccountPost, Long> {
     @Query("select ap from AccountPost ap join fetch ap.post where ap.account.id = :accountId")
@@ -21,4 +22,6 @@ public interface AccountPostJpaRepo extends JpaRepository<AccountPost, Long> {
             value = "select ap from AccountPost ap join fetch ap.post where ap.account.id = :accountId",
             countQuery = "select count(ap) from AccountPost ap where ap.account.id = :accountId")
     Page<AccountPost> findByAccount(@Param("accountId") Long accountId, Pageable pageable);
+
+    Optional<AccountPost> findByAccountAndPost(Account account, Post post);
 }
