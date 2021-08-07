@@ -3,6 +3,7 @@ package com.diving.community.service;
 import com.diving.community.domain.AccountPost;
 import com.diving.community.domain.account.Account;
 import com.diving.community.domain.post.Post;
+import com.diving.community.domain.post.PostImage;
 import com.diving.community.dto.post.list.PostsModel;
 import com.diving.community.repo.AccountPostJpaRepo;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class AccountPostService {
         List<PostsModel> postsModels = new ArrayList<>();
         for (AccountPost accountPost : accountPostPage.getContent()) {
             Post post = accountPost.getPost();
-            String mainPostImageUrl = post.getPostImages().get(0).getImageUrl();
+            String mainPostImageUrl = findMainPostImageUrl(post);
             String writerNickname = post.getWriter().getNickName();
             boolean isLiked = true;
 
@@ -84,5 +85,11 @@ public class AccountPostService {
         }
 
         return new PageImpl<>(postsModels, accountPostPage.getPageable(), accountPostPage.getTotalElements());
+    }
+
+    private String findMainPostImageUrl(Post post) {
+        List<PostImage> postImages = post.getPostImages();
+
+        return postImages.isEmpty() ? "" : postImages.get(0).getImageUrl();
     }
 }
