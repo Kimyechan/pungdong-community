@@ -73,7 +73,17 @@ public class AccountPostService {
         }
     }
 
+    public void checkNotLikePost(Account account, Post post) {
+        Optional<AccountPost> accountPost = accountPostJpaRepo.findByAccountAndPost(account, post);
+
+        if (accountPost.isEmpty()) {
+            throw new BadRequestException("좋아요 하지않은 게시물 입니다");
+        }
+    }
+
     public void deleteLikePost(Account account, Post post) {
+        checkNotLikePost(account, post);
+
         accountPostJpaRepo.deleteByAccountAndPost(account, post);
     }
 
