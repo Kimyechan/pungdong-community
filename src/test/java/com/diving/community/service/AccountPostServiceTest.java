@@ -45,4 +45,26 @@ class AccountPostServiceTest {
         // then
         assertDoesNotThrow(() -> accountPostService.checkAlreadyLikePost(any(), any()));
     }
+
+    @Test
+    @DisplayName("좋아요 취소 시 게시글 좋아요 여부 확인 - 좋아요하지 않은 게시물")
+    public void checkNotLikePostException() {
+        // given
+        given(accountPostJpaRepo.findByAccountAndPost(any(), any())).willReturn(Optional.empty());
+
+        // when
+        // then
+        assertThrows(BadRequestException.class, () -> accountPostService.checkNotLikePost(any(), any()));
+    }
+
+    @Test
+    @DisplayName("좋아요 취소 시 게시글 좋아요 여부 확인 - 좋아요하지 않은 게시물")
+    public void checkNotLikePostNotException() {
+        // given
+        given(accountPostJpaRepo.findByAccountAndPost(any(), any())).willReturn(Optional.of(AccountPost.builder().build()));
+
+        // when
+        // then
+        assertDoesNotThrow(() -> accountPostService.checkNotLikePost(any(), any()));
+    }
 }
