@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class AccountKafkaConsumer {
     private final AccountJpaRepo accountJpaRepo;
 
-    @KafkaListener(topics = "account", groupId = "community")
+    @KafkaListener(topics = "account", groupId = "community-create")
     public void saveAccount(AccountInfo accountInfo) {
         Account account = Account.builder()
                 .id(Long.valueOf(accountInfo.getId()))
@@ -25,7 +25,7 @@ public class AccountKafkaConsumer {
         accountJpaRepo.save(account);
     }
 
-    @KafkaListener(topics = "update-account", groupId = "community")
+    @KafkaListener(topics = "update-account", groupId = "community-update")
     public void consumeAccountUpdateEvent(AccountInfo accountInfo) {
         Account account = Account.builder()
                 .id(Long.valueOf(accountInfo.getId()))
